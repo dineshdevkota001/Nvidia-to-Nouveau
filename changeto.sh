@@ -2,6 +2,16 @@
 xorgconf=/usr/share/X11/xorg.conf.d
 nvidiafile=10-nvidia-drm-outputclass.conf
 nouveaufile=20-nouveau.conf
+
+function reboot_process(){
+    read -p 'Reboot? y ' choice
+    if [[ choice == [yY] ]]
+    then
+        reboot
+    fi
+}
+
+
 function nvidia(){
     echo 'nvidia'
     echo 'blacklisting nouveau'
@@ -23,7 +33,7 @@ function nvidia(){
     mv $xorgconf/$nouveaufile $xorgconf/$nouveaufile.bak
     fi
     echo 'done'
-
+    reboot_process
 }
 
 function nouveau(){
@@ -32,7 +42,7 @@ function nouveau(){
     echo '#blacklist nouveau'>/usr/lib/modprobe.d/nvidia.conf
     echo 'done'
     echo 'blacklisting nvidia'
-    echo 'blacklist nvidia'>/usr/lib/modprobe.d/nvidia.conf
+    echo 'blacklist nvidia'>>/usr/lib/modprobe.d/nvidia.conf
     echo 'done'
     
     echo 'deconfiguring nvidia setup'
@@ -50,6 +60,7 @@ function nouveau(){
         cp ./$nouveaufile $xorgconf/$nouveaufile
     fi
     echo 'done'
+    reboot_process
 }
 
 
@@ -57,11 +68,9 @@ function nouveau(){
 if [[ $1 == 'nvidia' ]]
 then
     nvidia
-
 elif [[ $1 == 'nouveau' ]]
 then
     nouveau
-
 else
     echo There are two options
     echo nvidia: change to nvidia
